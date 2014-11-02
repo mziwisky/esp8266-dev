@@ -1,0 +1,92 @@
+# newlib options
+
+## depends on BARE_METAL
+##
+## select LIBC_SUPPORT_THREADS_NONE
+## select CC_CORE_PASS_2_NEEDED
+##
+## help Newlib is a C library intended for use on embedded systems. It is a
+## help conglomeration of several library parts, all under free software
+## help licenses that make them easily usable on embedded products. Newlib
+## help is only available in source form. It can be compiled for a wide
+## help array of processors, and will usually work on any architecture with
+## help the addition of a few low-level routines.
+
+choice
+    bool
+    prompt "newlib version"
+# Don't remove next line
+# CT_INSERT_VERSION_BELOW
+
+config LIBC_NEWLIB_V_2_1_0
+    bool
+    prompt "2.1.0 (EXPERIMENTAL)"
+    depends on EXPERIMENTAL
+
+config LIBC_NEWLIB_V_2_0_0
+    bool
+    prompt "2.0.0 (EXPERIMENTAL)"
+    depends on EXPERIMENTAL
+
+config LIBC_NEWLIB_V_1_20_0
+    bool
+    prompt "1.20.0"
+
+config LIBC_NEWLIB_V_1_19_0
+    bool
+    prompt "1.19.0"
+
+config LIBC_NEWLIB_V_1_18_0
+    bool
+    prompt "1.18.0"
+
+config LIBC_NEWLIB_V_1_17_0
+    bool
+    prompt "1.17.0"
+
+config LIBC_NEWLIB_CUSTOM
+    bool
+    prompt "Custom newlib"
+    depends on EXPERIMENTAL
+
+endchoice
+
+if LIBC_NEWLIB_CUSTOM
+
+config LIBC_NEWLIB_CUSTOM_LOCATION
+    string
+    prompt "Full path to custom newlib source"
+    default ""
+    help
+      Enter the path to the directory (or tarball) of your source for newlib,
+      or leave blank to use default CT_CUSTOM_LOCATION_ROOT_DIR/newlib
+
+endif # LIBC_NEWLIB_CUSTOM
+
+config LIBC_VERSION
+    string
+# Don't remove next line
+# CT_INSERT_VERSION_STRING_BELOW
+    default "2.1.0" if LIBC_NEWLIB_V_2_1_0
+    default "2.0.0" if LIBC_NEWLIB_V_2_0_0
+    default "1.20.0" if LIBC_NEWLIB_V_1_20_0
+    default "1.19.0" if LIBC_NEWLIB_V_1_19_0
+    default "1.18.0" if LIBC_NEWLIB_V_1_18_0
+    default "1.17.0" if LIBC_NEWLIB_V_1_17_0
+    default "custom" if LIBC_NEWLIB_CUSTOM
+    help
+      Enter the tag you want to use.
+      Leave empty to use the 'head' of the repository.
+
+comment "Architecture specific options"
+
+config ATMEL_AVR32_HEADERS
+    bool
+    prompt "Install Atmel AVR32 headers"
+    depends on ARCH_avr32
+    default y
+    help
+      Install Atmel AVR32 headers for native AVR32 development. Most
+      AVR32 MCU devices are supported.
+      
+      If you do native AVR32 development you want to say 'Y' here.

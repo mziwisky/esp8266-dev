@@ -1,0 +1,52 @@
+# newlib second-part options
+
+config LIBC_NEWLIB_IO_C99FMT
+    bool
+    prompt "Enable IOs on C99 formats"
+    help
+      Enable support for IOs on C99 formats.
+
+config LIBC_NEWLIB_IO_LL
+    bool
+    prompt "Enable IOs on long long"
+    help
+      Enable support for IOs on long long integers.
+
+config LIBC_NEWLIB_IO_FLOAT
+    bool
+    prompt "Enable IOs on floats and doubles"
+    help
+      Enable support for IOs on floating point
+      values (float and double).
+
+config LIBC_NEWLIB_IO_LDBL
+    bool
+    prompt "Enable IOs on long doubles"
+    depends on LIBC_NEWLIB_IO_FLOAT
+    help
+      Enable support for IOs on long doubles.
+
+config LIBC_NEWLIB_DISABLE_SUPPLIED_SYSCALLS
+    bool
+    prompt "Disable the syscalls supplied with newlib"
+    help
+      Disable the syscalls that come with newlib. You
+	  will have to implement your own _sbrk, _read,
+	  _write... If you plan to port newlib to a new
+	  platform/board, say Yes.
+
+config LIBC_NEWLIB_ENABLE_TARGET_OPTSPACE
+    bool
+    prompt "Optimize newlib for size"
+    default y
+    help
+      Pass --enable-target-optspace to newlib configure.
+      
+      This will compile newlib with -Os.
+
+config LIBC_NEWLIB_EXTRA_CONFIG_ARRAY
+    string
+    prompt "Extra config for newlib"
+    default ""
+    help
+      Extra flags to pass onto ./configure when configuring the newlib.

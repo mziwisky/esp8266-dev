@@ -1,0 +1,195 @@
+# uClibc options
+
+## depends on ! WINDOWS && ! BARE_METAL
+##
+## select LIBC_SUPPORT_THREADS_LT
+## select LIBC_SUPPORT_THREADS_NONE
+## select CC_CORE_PASSES_NEEDED
+##
+## help The de-facto standard for embeded linux systems.
+## help
+## help Highly configurable, thus as feature-rich as you
+## help need, without compromising for size.
+
+config THREADS
+    default "nptl"          if THREADS_NATIVE
+    default "linuxthreads"  if THREADS_LT
+
+if ARCH_FLOAT_SOFTFP
+comment "'softfp' ABI and uClibc is not entirely tested in crosstool-NG"
+comment "You may experience issues, although it should work just fine"
+endif # ARCH_FLOAT_SOFTFP
+
+choice
+    bool
+    prompt "uClibc version"
+# Don't remove next line
+# CT_INSERT_VERSION_BELOW
+
+config LIBC_UCLIBC_V_0_9_33_2
+    bool
+    prompt "0.9.33.2"
+    select LIBC_UCLIBC_0_9_32_or_later
+
+config LIBC_UCLIBC_V_0_9_33_1
+    bool
+    prompt "0.9.33.1"
+    select LIBC_UCLIBC_0_9_32_or_later
+
+config LIBC_UCLIBC_V_0_9_33
+    bool
+    prompt "0.9.33"
+    select LIBC_UCLIBC_0_9_32_or_later
+
+config LIBC_UCLIBC_V_0_9_32_1
+    bool
+    prompt "0.9.32.1"
+    select LIBC_UCLIBC_0_9_32_or_later
+
+config LIBC_UCLIBC_V_0_9_32
+    bool
+    prompt "0.9.32"
+    select LIBC_UCLIBC_0_9_32_or_later
+
+config LIBC_UCLIBC_V_0_9_31
+    bool
+    prompt "0.9.31"
+    select LIBC_UCLIBC_0_9_30_or_later
+
+config LIBC_UCLIBC_V_0_9_30_3
+    bool
+    prompt "0.9.30.3"
+    select LIBC_UCLIBC_0_9_30_or_later
+
+config LIBC_UCLIBC_V_0_9_30_2
+    bool
+    prompt "0.9.30.2"
+    select LIBC_UCLIBC_0_9_30_or_later
+
+config LIBC_UCLIBC_V_0_9_30_1
+    bool
+    prompt "0.9.30.1"
+    select LIBC_UCLIBC_0_9_30_or_later
+
+config LIBC_UCLIBC_V_0_9_30
+    bool
+    prompt "0.9.30"
+    select LIBC_UCLIBC_0_9_30_or_later
+
+config LIBC_UCLIBC_CUSTOM
+    bool
+    prompt "Custom uClibc"
+    depends on EXPERIMENTAL
+    select LIBC_SUPPORT_THREADS_NATIVE
+    select LIBC_UCLIBC_0_9_30_or_later
+
+endchoice
+
+if LIBC_UCLIBC_CUSTOM
+
+config LIBC_UCLIBC_CUSTOM_LOCATION
+    string
+    prompt "Full path to custom uClibc source"
+    default ""
+    help
+      Enter the path to the directory (or tarball) of your source for uClibc,
+      or leave blank to use default CT_CUSTOM_LOCATION_ROOT_DIR/uClibc
+
+endif # LIBC_UCLIBC_CUSTOM
+
+config LIBC_VERSION
+    string
+# Don't remove next line
+# CT_INSERT_VERSION_STRING_BELOW
+    default "0.9.33.2" if LIBC_UCLIBC_V_0_9_33_2
+    default "0.9.33.1" if LIBC_UCLIBC_V_0_9_33_1
+    default "0.9.33" if LIBC_UCLIBC_V_0_9_33
+    default "0.9.32.1" if LIBC_UCLIBC_V_0_9_32_1
+    default "0.9.32" if LIBC_UCLIBC_V_0_9_32
+    default "0.9.31" if LIBC_UCLIBC_V_0_9_31
+    default "0.9.30.3" if LIBC_UCLIBC_V_0_9_30_3
+    default "0.9.30.2" if LIBC_UCLIBC_V_0_9_30_2
+    default "0.9.30.1" if LIBC_UCLIBC_V_0_9_30_1
+    default "0.9.30" if LIBC_UCLIBC_V_0_9_30
+    default "custom" if LIBC_UCLIBC_CUSTOM
+
+config LIBC_UCLIBC_0_9_32_or_later
+    bool
+    select LIBC_SUPPORT_THREADS_NATIVE
+    select LIBC_UCLIBC_0_9_30_or_later
+
+config LIBC_UCLIBC_0_9_30_or_later
+    bool
+    select LIBC_UCLIBC_PARALLEL
+
+config LIBC_UCLIBC_PARALLEL
+    bool
+
+choice
+    bool
+    prompt "uClibc verbosity:"
+    default LIBC_UCLIBC_VERBOSITY_0
+
+config LIBC_UCLIBC_VERBOSITY_0
+    bool
+    prompt "Quiet build"
+    help
+      Print terse command indications.
+
+config LIBC_UCLIBC_VERBOSITY_1
+    bool
+    prompt "Brief build (show defines, ld flags)"
+    help
+      Print simplified command lines.
+
+config LIBC_UCLIBC_VERBOSITY_2
+    bool
+    prompt "Very verbose build"
+    help
+      Print full command lines.
+
+endchoice
+
+config LIBC_UCLIBC_VERBOSITY
+    string
+    default ""      if LIBC_UCLIBC_VERBOSITY_0
+    default "V=1"   if LIBC_UCLIBC_VERBOSITY_1
+    default "V=2"   if LIBC_UCLIBC_VERBOSITY_2
+
+choice
+    bool
+    prompt "Debug level"
+    default LIBC_UCLIBC_DEBUG_LEVEL_0
+
+config LIBC_UCLIBC_DEBUG_LEVEL_0
+    bool
+    prompt "none"
+
+config LIBC_UCLIBC_DEBUG_LEVEL_1
+    bool
+    prompt "minimal"
+
+config LIBC_UCLIBC_DEBUG_LEVEL_2
+    bool
+    prompt "normal"
+
+config LIBC_UCLIBC_DEBUG_LEVEL_3
+    bool
+    prompt "all"
+
+endchoice
+
+config LIBC_UCLIBC_DEBUG_LEVEL
+    int
+    default 0 if LIBC_UCLIBC_DEBUG_LEVEL_0
+    default 1 if LIBC_UCLIBC_DEBUG_LEVEL_1
+    default 2 if LIBC_UCLIBC_DEBUG_LEVEL_2
+
+config LIBC_UCLIBC_CONFIG_FILE
+    string
+    prompt "Configuration file"
+    default ""
+    help
+      Path to the configuration file.
+      
+      You _must_ provide one (for now).

@@ -1,0 +1,44 @@
+# mingw options
+
+## depends on WINDOWS
+##
+## select LIBC_SUPPORT_THREADS_NATIVE
+## select CC_CORE_PASS_2_NEEDED
+##
+## help The de-facto standard for Mingw distributions.
+
+config THREADS
+    default "win32"
+
+choice
+    bool
+    prompt "Windows API version"
+
+# Don't remove next line
+# CT_INSERT_VERSION_BELOW
+config WINAPI_V_2_0_7
+    bool
+    prompt "2.0.7"
+
+config WINAPI_V_select
+    bool
+    prompt "Other version"
+
+endchoice
+
+config WINAPI_VERSION
+    string
+    prompt "Windows API version" if WINAPI_V_select
+# Don't remove next line
+# CT_INSERT_VERSION_STRING_BELOW
+    default "2.0.7" if WINAPI_V_2_0_7
+    help
+      Enter the version number of the Windows API files to use
+
+config MINGW_DIRECTX
+    bool
+    prompt "Include DirectX development files"
+
+config MINGW_DDK
+    bool
+    prompt "Include DDK development files"

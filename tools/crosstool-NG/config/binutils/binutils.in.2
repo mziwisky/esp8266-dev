@@ -1,0 +1,69 @@
+# elf2flt options
+
+if ARCH_BINFMT_FLAT
+
+comment "elf2flt"
+
+choice
+    bool
+    prompt "elf2flt version"
+
+config ELF2FLT_GIT
+    bool
+    prompt "git"
+    help
+      Grab the latest version of elf2flt from the CVS repository
+
+config ELF2FLT_CUSTOM
+    bool
+    prompt "Custom elf2flt"
+    depends on EXPERIMENTAL
+
+endchoice
+
+config ELF2FLT_VERSION
+    string
+
+if ELF2FLT_GIT
+
+config ELF2FLT_GIT_CSET
+    string
+    prompt "git cset"
+    default "21c6a41885ad544763ccd19883c1353f3b0b7a47"
+    help
+      Enter the git changeset to use.
+
+      The default currently points to the HEAD of the git tree.
+
+config ELF2FLT_VERSION
+    default ELF2FLT_GIT_CSET
+
+endif # ELF2FLT_GIT
+
+if ELF2FLT_CUSTOM
+
+config ELF2FLT_VERSION
+    default "custom"
+
+config ELF2FLT_CUSTOM_LOCATION
+    string
+    prompt "Full path to custom elf2flt source"
+    default ""
+    help
+      Enter the path to the directory (or tarball) of your source for elf2flt,
+      or leave blank to use default CT_CUSTOM_LOCATION_ROOT_DIR/elf2flt
+
+endif # ELF2FLT_CUSTOM
+
+config ELF2FLT_EXTRA_CONFIG_ARRAY
+    string
+    prompt "elf2flt extra config"
+    default ""
+    help
+      Extra flags passed onto ./configure when configuring
+      
+      You can enter multiple arguments here, and arguments can contain spaces
+      if they are properly quoted (or escaped, but prefer quotes). Eg.:
+          --with-foo="1st arg with 4 spaces" --with-bar=2nd-arg-without-space
+
+endif

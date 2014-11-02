@@ -1,3 +1,5 @@
+TODO: notes and/or helper script about setting up USB-serial devices
+
 TODO: add a hello-world (prob's the AT example) and ensure esptool.py is in
 there for it
 

@@ -26,3 +26,9 @@ tar -xzf /vagrant/tools/sdk/extra-includes/include.tgz
 # Install ESP tool
 sudo dpkg -i /vagrant/tools/esptool/esptool_0.0.2-1_i386.deb
 
+# Install pySerial
+tar -xzf /vagrant/tools/pyserial-2.7.tar.gz -C /tmp
+cd /tmp/pyserial-2.7
+sudo python setup.py install
+rm -rf /tmp/pyserial-2.7
+

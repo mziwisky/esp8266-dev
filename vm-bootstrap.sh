@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
+set -e
 
 # This is based on https://github.com/esp8266/esp8266-wiki/wiki/Toolchain
 
 # prepare the machine
-apt-get update
-apt-get install git autoconf build-essential gperf bison flex texinfo libtool libncurses5-dev wget gawk libc6-dev-amd64 unzip
-mkdir /opt/Espressif
-chown vagrant /opt/Espressif
+sudo apt-get update
+sudo apt-get -y install git autoconf build-essential gperf bison flex texinfo libtool libncurses5-dev wget gawk libc6-dev-amd64 unzip
+sudo mkdir /opt/Espressif || :
+sudo chown vagrant /opt/Espressif
 
 # Build the cross-compiler
 cp -r /vagrant/tools/crosstool-NG /opt/Espressif/
@@ -23,5 +24,5 @@ cp /vagrant/tools/sdk/extra-libs/* ESP8266_SDK/lib/
 tar -xzf /vagrant/tools/sdk/extra-includes/include.tgz
 
 # Install ESP tool
-dpkg -i /vagrant/tools/esptool/esptool_0.0.2-1_i386.deb
+sudo dpkg -i /vagrant/tools/esptool/esptool_0.0.2-1_i386.deb
 

@@ -126,6 +126,8 @@ NOTE 2: It's generally a good idea to power cycle the chip between uploads.
 `make flash` includes a `sleep 3` between two flashes to different areas of
 memory, so you can use that delay to cycle.
 
+For more info, see `esphttpd/README`.
+
 
 ## Vagrant tips, for the uninitiated
 

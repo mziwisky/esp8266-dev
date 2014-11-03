@@ -15,7 +15,7 @@ dollar "Internet of Things" WiFi module.
 2. [VirtualBox](https://www.virtualbox.org/), a free open source virtualization
    package.
 
-3. [Vagrant](https://www.vagrantup.com), a virtualization management package
+3. [Vagrant](https://www.vagrantup.com), a virtualization management tool
    geared towards development environments.
 
 
@@ -29,29 +29,27 @@ dollar "Internet of Things" WiFi module.
    the existing configuration, but you may as well do this step too to be sure.
    It's an easy one.
 
-   - Connect your device to your computer and from the command line, run
-     `VBoxManage list usbhost`. The output should be a list of entries that
-     look like this:
+   Connect your device to your computer and from the command line, run
+   `VBoxManage list usbhost`. The output should be a list of entries that
+   look like this:
 
-    $ VBoxManage list usbhost
-    Host USB Devices:
-    
-    ...
-    
-    UUID:               738b44fd-2f57-49dd-a16a-e31a0e7fa46f
-    VendorId:           0x067b (067B)
-    ProductId:          0x2303 (2303)
-    Revision:           3.0 (0300)
-    Port:               1
-    USB version/speed:  0/1
-    Manufacturer:       Prolific Technology Inc.
-    Product:            USB-Serial Controller
-    Address:            p=0x2303;v=0x067b;s=0x0002653c8cdc2c52;l=0x14100000
-    Current State:      Captured
+        $ VBoxManage list usbhost
+        Host USB Devices:
+        ...
+        UUID:               738b44fd-2f57-49dd-a16a-e31a0e7fa46f
+        VendorId:           0x067b (067B)
+        ProductId:          0x2303 (2303)
+        Revision:           3.0 (0300)
+        Port:               1
+        USB version/speed:  0/1
+        Manufacturer:       Prolific Technology Inc.
+        Product:            USB-Serial Controller
+        Address:            p=0x2303;v=0x067b;s=0x0002653c8cdc2c52;l=0x14100000
+        Current State:      Captured
 
-   - Note the VendorId and ProductId. Set the `$vendor_id` and `$product_id`
-     variables in `Vagrantfile` to those values. They must be strings of the
-     hexadecimal representations.
+   Note the VendorId and ProductId. Set the `$vendor_id` and `$product_id`
+   variables in `Vagrantfile` to those values. They must be strings of the
+   hexadecimal representations.
 
 2. In the console, run `vagrant up`. Note that this may take a decent chunk of
    time -- it was ~30 minutes on my 2013 Macbook Pro. Most of it is spent

@@ -116,15 +116,15 @@ I've included a very awesome sample project from
 [esphttpd](http://www.esp8266.com/viewtopic.php?f=6&t=376). From inside the
 virtual machine, `cd /vagrant/esphttpd && make` to build it. Then make sure
 your chip is in firmware upload mode by tieing the CH_PD and GPIO2 pins HIGH
-and the GPIO0 pin LOW. Power it on, and run `make flash`, followed by `make
-htmlflash`.
+and the GPIO0 pin LOW. Power it on, and run `sudo make flash`, followed by
+`sudo make htmlflash`. (The `sudo`s are needed to access /dev/ttyUSB0)
 
 NOTE 1: you may receive `Failed to leave flash mode` exceptions after each
 flash. Don't worry, it's most likely a false alarm.
 
 NOTE 2: It's generally a good idea to power cycle the chip between uploads.
-`make flash` includes a `sleep 3` between two flashes to different areas of
-memory, so you can use that delay to cycle.
+`sudo make flash` includes a `sleep 3` between two flashes to different
+areas of memory, so you can use that delay to cycle.
 
 For more info, see `esphttpd/README`.
 

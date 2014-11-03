@@ -1,4 +1,4 @@
-esp8622-dev
+esp8266-dev
 ===========
 
 A Vagrant-powered virtual machine providing an isolated development
@@ -149,12 +149,12 @@ meaning it'll take a while.
 `suspend`, or `destroy`
 
 
-## ESP8622 Resources
+## ESP8266 Resources
 
 - https://github.com/esp8266/esp8266-wiki - the wiki containing everything I
   needed to build this repo
 - http://esp8266.com - a forum for people interested in hacking on the chip
-- `#esp8622` on Freenode
+- `#esp8266` on Freenode
 - http://www.electrodragon.com/w/Wi07c - another nice wiki I found useful for
   exploring the AT commands
 

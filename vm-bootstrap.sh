@@ -27,31 +27,29 @@ if [ ! -d /opt/Espressif/crosstool-NG/builds ]; then
 	./ct-ng xtensa-lx106-elf
 fi
 
-./ct-ng build
-# PATH=$PWD/builds/xtensa-lx106-elf/bin:$PATH
 
-# Create symlinks
-cd /opt/Espressif/crosstool-NG
-sudo rm -rf /usr/bin/xtensa-lx106-elf*
-sudo rm -rf /usr/bin/xt-ar /usr/bin/xt-xcc /usr/bin/xt-nm /usr/bin/xt-cpp /usr/bin/xt-objcopy /usr/bin/xt-readelf /usr/bin/xt-objdump
+CT_DEBUG_CT_SAVE_STEPS=1 ./ct-ng build
+PATH=$PWD/builds/xtensa-lx106-elf/bin:$PATH
 
-sudo ln -s $PWD/builds/xtensa-lx106-elf/bin/xtensa-lx106-elf-gcc-ar /usr/bin/xtensa-lx106-elf-gcc-ar
-sudo ln -s $PWD/builds/xtensa-lx106-elf/bin/xtensa-lx106-elf-gcc /usr/bin/xtensa-lx106-elf-gcc
-sudo ln -s $PWD/builds/xtensa-lx106-elf/bin/xtensa-lx106-elf-nm /usr/bin/xtensa-lx106-elf-nm
-sudo ln -s $PWD/builds/xtensa-lx106-elf/bin/xtensa-lx106-elf-cpp /usr/bin/xtensa-lx106-elf-cpp
-sudo ln -s $PWD/builds/xtensa-lx106-elf/bin/xtensa-lx106-elf-objcopy /usr/bin/xtensa-lx106-elf-objcopy
-sudo ln -s $PWD/builds/xtensa-lx106-elf/bin/xtensa-lx106-elf-readelf /usr/bin/xtensa-lx106-elf-readelf
-sudo ln -s $PWD/builds/xtensa-lx106-elf/bin/xtensa-lx106-elf-objdump /usr/bin/xtensa-lx106-elf-objdump
+# Setup the cross compiler
+HAS_PATH=`cat ~/.bashrc | grep "/opt/Espressif/crosstool-NG/builds/xtensa-lx106-elf/bin:" || echo -n ""`
+if [ -z $HAS_PATH ]; then
+	echo "# Add Xtensa Compiler Path" >> ~/.bashrc
+	echo "PATH=$PWD/builds/xtensa-lx106-elf/bin:$PATH" >> ~/.bashrc
+fi
 
-sudo ln -s $PWD/builds/xtensa-lx106-elf/bin/xtensa-lx106-elf-gcc-ar /usr/bin/xt-ar
-sudo ln -s $PWD/builds/xtensa-lx106-elf/bin/xtensa-lx106-elf-gcc /usr/bin/xt-xcc
-sudo ln -s $PWD/builds/xtensa-lx106-elf/bin/xtensa-lx106-elf-nm /usr/bin/xt-nm
-sudo ln -s $PWD/builds/xtensa-lx106-elf/bin/xtensa-lx106-elf-cpp /usr/bin/xt-cpp
-sudo ln -s $PWD/builds/xtensa-lx106-elf/bin/xtensa-lx106-elf-objcopy /usr/bin/xt-objcopy
-sudo ln -s $PWD/builds/xtensa-lx106-elf/bin/xtensa-lx106-elf-readelf /usr/bin/xt-readelf
-sudo ln -s $PWD/builds/xtensa-lx106-elf/bin/xtensa-lx106-elf-objdump /usr/bin/xt-objdump
 
-HAS_CROSS_COMPILE=`cat ~/.bashrc | grep CROSS_COMPILE`
+cd /opt/Espressif/crosstool-NG/builds/xtensa-lx106-elf/bin
+sudo rm -f xt-*
+for i in `ls xtensa-lx106*`; do
+	XT_NAME=`echo -n $i | sed s/xtensa-lx106-elf-/xt-/`
+	echo $XT_NAME;	
+	sudo ln -s "$i" "$XT_NAME"; 
+done
+sudo ln -s xt-cc xt-xcc # the RTOS SDK needs it
+sudo chown vagrant -R /opt/Espressif/crosstool-NG/builds/xtensa-lx106-elf/bin
+
+HAS_CROSS_COMPILE=`cat ~/.bashrc | grep CROSS_COMPILE || echo -n ""`
 if [ -z $HAS_CROSS_COMPILE ]; then
 	echo "# Cross Compilation Settings" >> ~/.bashrc
 	echo "CROSS_COMPILE=xtensa-lx106-elf-" >> ~/.bashrc
@@ -60,9 +58,10 @@ fi
 # Set up the SDK
 cd /opt/Espressif
 LATEST_SDK_VERSION="esp_iot_sdk_v0.9.5"
-CURRENT_SDK_VERSION=`readlink ESP8266_SDK`;
+CURRENT_SDK_VERSION=`readlink esp8266_sdk || echo -n ""`;
+
 if [ "$LATEST_SDK_VERSION" != "$CURRENT_SDK_VERSION" ]; then
-	rm -rf ESP8266_SDK
+	rm -rf esp8266_sdk
 	unzip -o /vagrant/tools/sdk/esp_iot_sdk_v0.9.5_15_01_23.zip
 	mv License esp_iot_sdk_v0.9.5/
 	mv release_note.txt esp_iot_sdk_v0.9.5/
@@ -74,11 +73,37 @@ if [ "$LATEST_SDK_VERSION" != "$CURRENT_SDK_VERSION" ]; then
 	unzip -o /vagrant/tools/sdk/esp_iot_sdk_v0.9.5_15_01_23_patch1.zip libmain_fix_0.9.5.a
 	mv libmain_fix_0.9.5.a libmain.a
 	cd ../../
-	ln -s esp_iot_sdk_v0.9.5 ESP8266_SDK
-	cp /vagrant/tools/sdk/extra-libs/* ESP8266_SDK/lib/
-	cd /opt/Espressif/ESP8266_SDK
+	ln -s esp_iot_sdk_v0.9.5 esp8266_sdk
+	cp /vagrant/tools/sdk/extra-libs/* esp8266_sdk/lib/
+	cd /opt/Espressif/esp8266_sdk
 	tar -xzf /vagrant/tools/sdk/extra-includes/include.tgz
 fi
+
+HAS_SDK_BASE=`cat ~/.bashrc | grep ESP8266_SDK_BASE || echo -n ""`
+if [ -z $HAS_SDK_BASE ]; then
+	echo "# ESP8266 SDK Base" >> ~/.bashrc
+	echo "ESP8266_SDK_BASE=/opt/Espressif/esp8266_sdk" >> ~/.bashrc
+fi
+
+# Set up the RTOS SDK
+cd /opt/Espressif
+if [ ! -d /opt/Espressif/esp8266_rtos_sdk ]; then
+	git clone https://github.com/espressif/esp_iot_rtos_sdk.git esp8266_rtos_sdk
+	git clone https://github.com/espressif/esp_iot_rtos_sdk_lib esp8266_rtos_sdk_lib
+	cp esp8266_rtos_sdk_lib/lib/* esp8266_rtos_sdk/lib
+fi
+
+cd /opt/Espressif/esp8266_rtos_sdk
+git pull
+make 
+
+HAS_RTOS_SDK_BASE=`cat ~/.bashrc | grep ESP8266_RTOS_SDK_BASE || echo -n ""`
+if [ -z $HAS_RTOS_SDK_BASE ]; then
+	echo "# ESP8266 RTOS SDK Base" >> ~/.bashrc
+	echo "ESP8266_RTOS_SDK_BASE=/opt/Espressif/esp8266_rtos_sdk" >> ~/.bashrc
+fi
+
+
 
 # Install ESP tool
 sudo dpkg -i /vagrant/tools/esptool/esptool_0.0.2-1_i386.deb
@@ -90,6 +115,6 @@ if [ ! -d /opt/Espressif/esptool-py ]; then
 fi
 cd /opt/Espressif/esptool-py
 git pull
-sudo rm /usr/local/bin/esptool.py
+sudo rm -f /usr/local/bin/esptool.py
 sudo ln -s $PWD/esptool-py/esptool.py /usr/local/bin/
 

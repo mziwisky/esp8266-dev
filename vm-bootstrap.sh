@@ -37,6 +37,7 @@ HAS_PATH=`cat ~/.bashrc | grep "/opt/Espressif/crosstool-NG/builds/xtensa-lx106-
 if [ -z "$HAS_PATH" ]; then
 	echo "# Add Xtensa Compiler Path" >> ~/.bashrc
 	echo "PATH=$PWD/builds/xtensa-lx106-elf/bin:\$PATH" >> ~/.bashrc
+	echo "XTENSA_TOOLS_ROOT=$PWD/builds/xtensa-lx106-elf/bin" >> ~/.bashrc 
 fi
 
 cd /opt/Espressif/crosstool-NG/builds/xtensa-lx106-elf/bin
@@ -86,6 +87,8 @@ HAS_SDK_BASE=`cat ~/.bashrc | grep "ESP8266_SDK_BASE" || :`
 if [ -z "$HAS_SDK_BASE" ]; then
 	echo "# ESP8266 SDK Base" >> ~/.bashrc
 	echo "ESP8266_SDK_BASE=/opt/Espressif/esp8266_sdk" >> ~/.bashrc
+	echo "SDK_BASE=/opt/Espressif/esp8266_sdk" >> ~/.bashrc
+	echo "SDK_EXTRA_INCLUDES=/opt/Espressif/esp8266_sdk/include" >> ~/.bashrc 
 fi
 
 # Set up the RTOS SDK

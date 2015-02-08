@@ -168,3 +168,6 @@ than make references to everything so that _this_ repo would remain a set of
 tools that work together out of the box. I may change this practice in the
 future.
 
+*UPDATE:* it's the future, and @slaff has helped move toward not shoving
+everything into this repo, so crosstool-NG is now pulled in by the
+provisioning script. So is esptool.py. Thanks @slaff!

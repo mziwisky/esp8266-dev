@@ -30,31 +30,30 @@ make STANDALONE=y
 export PATH=$PWD/xtensa-lx106-elf/bin:$PATH
 
 # Setup the cross compiler
-HAS_PATH=`cat ~/.bashrc | grep "$PWD/xtensa-lx106-elf/bin:" || echo -n ""`
-if [ -z $HAS_PATH ]; then
+HAS_PATH=`cat ~/.bashrc | grep "$PWD/xtensa-lx106-elf/bin:" || :`
+if [ -z "$HAS_PATH" ]; then
 	echo "# Add Xtensa Compiler Path" >> ~/.bashrc
 	echo "PATH=$PWD/xtensa-lx106-elf/bin:$PATH" >> ~/.bashrc
 fi
-
 
 cd $PWD/xtensa-lx106-elf/bin
 sudo rm -f xt-*
 for i in `ls xtensa-lx106*`; do
 	XT_NAME=`echo -n $i | sed s/xtensa-lx106-elf-/xt-/`
-	echo $XT_NAME;	
-	sudo ln -s "$i" "$XT_NAME"; 
+	echo "symlinking: $XT_NAME"
+	sudo ln -s "$i" "$XT_NAME"
 done
 sudo ln -s xt-cc xt-xcc # the RTOS SDK needs it
 sudo chown vagrant -R /opt/Espressif/xtensa-lx106-elf/bin
 
-HAS_CROSS_COMPILE=`cat ~/.bashrc | grep CROSS_COMPILE || echo -n ""`
-if [ -z $HAS_CROSS_COMPILE ]; then
+HAS_CROSS_COMPILE=`cat ~/.bashrc | grep "CROSS_COMPILE" || :`
+if [ -z "$HAS_CROSS_COMPILE" ]; then
 	echo "# Cross Compilation Settings" >> ~/.bashrc
 	echo "CROSS_COMPILE=xtensa-lx106-elf-" >> ~/.bashrc
 fi
 
-HAS_SDK_BASE=`cat ~/.bashrc | grep ESP8266_SDK_BASE || echo -n ""`
-if [ -z $HAS_SDK_BASE ]; then
+HAS_SDK_BASE=`cat ~/.bashrc | grep "ESP8266_SDK_BASE" || :`
+if [ -z "$HAS_SDK_BASE" ]; then
 	echo "# ESP8266 SDK Base" >> ~/.bashrc
 	echo "ESP8266_SDK_BASE=/opt/Espressif/sdk" >> ~/.bashrc
 fi
@@ -63,8 +62,7 @@ fi
 sudo dpkg -i /vagrant/tools/esptool/esptool_0.0.2-1_i386.deb
 
 # Install esptool-py
-sudo rm -f /usr/local/bin/esptool.py
-sudo ln -s /opt/Espressif/esptool/esptool.py /usr/local/bin/
+sudo ln -sf /opt/Espressif/esptool/esptool.py /usr/local/bin/
 
 
 # Compile the NodeMCU firmware

@@ -115,6 +115,5 @@ if [ ! -d /opt/Espressif/esptool-py ]; then
 fi
 cd /opt/Espressif/esptool-py
 git pull
-sudo rm -f /usr/local/bin/esptool.py
-sudo ln -s $PWD/esptool-py/esptool.py /usr/local/bin/
+sudo ln -sf $PWD/esptool.py /usr/local/bin/
 

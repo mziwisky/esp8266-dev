@@ -20,16 +20,17 @@ if [ ! -d /opt/Espressif/crosstool-NG ]; then
 fi
 
 cd /opt/Espressif/crosstool-NG
-git pull
 
-if [ ! -d /opt/Espressif/crosstool-NG/builds ]; then
+function gitsha() { git show --format=%H | head -1; }
+OLDSHA=`gitsha`
+git pull origin lx106
+
+if [ "$OLDSHA" != `gitsha` ] || [ ! -d /opt/Espressif/crosstool-NG/builds ]; then
 	./bootstrap && ./configure -- prefix=`pwd` && make && make install
 	./ct-ng xtensa-lx106-elf
 fi
 
-
-CT_DEBUG_CT_SAVE_STEPS=1 ./ct-ng build
-PATH=$PWD/builds/xtensa-lx106-elf/bin:$PATH
+./ct-ng build
 
 # Setup the cross compiler
 HAS_PATH=`cat ~/.bashrc | grep "/opt/Espressif/crosstool-NG/builds/xtensa-lx106-elf/bin:" || :`
@@ -42,8 +43,8 @@ cd /opt/Espressif/crosstool-NG/builds/xtensa-lx106-elf/bin
 sudo rm -f xt-*
 for i in `ls xtensa-lx106*`; do
 	XT_NAME=`echo -n $i | sed s/xtensa-lx106-elf-/xt-/`
-	echo $XT_NAME;	
-	sudo ln -s "$i" "$XT_NAME"; 
+	echo "symlinking: $XT_NAME"
+	sudo ln -s "$i" "$XT_NAME"
 done
 sudo ln -s xt-cc xt-xcc # the RTOS SDK needs it
 sudo chown vagrant -R /opt/Espressif/crosstool-NG/builds/xtensa-lx106-elf/bin
@@ -91,13 +92,13 @@ fi
 cd /opt/Espressif
 if [ ! -d /opt/Espressif/esp8266_rtos_sdk ]; then
 	git clone https://github.com/espressif/esp_iot_rtos_sdk.git esp8266_rtos_sdk
-	git clone https://github.com/espressif/esp_iot_rtos_sdk_lib esp8266_rtos_sdk_lib
+	git clone https://github.com/espressif/esp_iot_rtos_sdk_lib.git esp8266_rtos_sdk_lib
 	cp esp8266_rtos_sdk_lib/lib/* esp8266_rtos_sdk/lib
 fi
 
 cd /opt/Espressif/esp8266_rtos_sdk
-git pull
-make 
+git pull origin master
+make
 
 HAS_RTOS_SDK_BASE=`cat ~/.bashrc | grep "ESP8266_RTOS_SDK_BASE" || :`
 if [ -z "$HAS_RTOS_SDK_BASE" ]; then
@@ -115,6 +116,6 @@ if [ ! -d /opt/Espressif/esptool-py ]; then
 	git clone https://github.com/themadinventor/esptool esptool-py
 fi
 cd /opt/Espressif/esptool-py
-git pull
+git pull origin master
 sudo ln -sf $PWD/esptool.py /usr/local/bin/
 

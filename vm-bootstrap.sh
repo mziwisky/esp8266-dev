@@ -88,6 +88,7 @@ HAS_SDK_BASE=`cat ~/.bashrc | grep "export SDK_BASE" || :`
 if [ -z "$HAS_SDK_BASE" ]; then
   echo "# ESP8266 SDK Base" >> ~/.bashrc
   echo "export SDK_BASE=/opt/Espressif/esp8266_sdk" >> ~/.bashrc
+  echo "export SDK_EXTRA_INCLUDES=/opt/Espressif/esp8266_sdk/include" >> ~/.bashrc
 fi
 
 # Set up the RTOS SDK

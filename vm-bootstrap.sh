@@ -32,12 +32,11 @@ CT_DEBUG_CT_SAVE_STEPS=1 ./ct-ng build
 PATH=$PWD/builds/xtensa-lx106-elf/bin:$PATH
 
 # Setup the cross compiler
-HAS_PATH=`cat ~/.bashrc | grep "/opt/Espressif/crosstool-NG/builds/xtensa-lx106-elf/bin:" || echo -n ""`
-if [ -z $HAS_PATH ]; then
+HAS_PATH=`cat ~/.bashrc | grep "/opt/Espressif/crosstool-NG/builds/xtensa-lx106-elf/bin:" || :`
+if [ -z "$HAS_PATH" ]; then
 	echo "# Add Xtensa Compiler Path" >> ~/.bashrc
-	echo "PATH=$PWD/builds/xtensa-lx106-elf/bin:$PATH" >> ~/.bashrc
+	echo "PATH=$PWD/builds/xtensa-lx106-elf/bin:\$PATH" >> ~/.bashrc
 fi
-
 
 cd /opt/Espressif/crosstool-NG/builds/xtensa-lx106-elf/bin
 sudo rm -f xt-*
@@ -49,16 +48,19 @@ done
 sudo ln -s xt-cc xt-xcc # the RTOS SDK needs it
 sudo chown vagrant -R /opt/Espressif/crosstool-NG/builds/xtensa-lx106-elf/bin
 
-HAS_CROSS_COMPILE=`cat ~/.bashrc | grep CROSS_COMPILE || echo -n ""`
-if [ -z $HAS_CROSS_COMPILE ]; then
+HAS_CROSS_COMPILE=`cat ~/.bashrc | grep "CROSS_COMPILE" || :`
+if [ -z "$HAS_CROSS_COMPILE" ]; then
 	echo "# Cross Compilation Settings" >> ~/.bashrc
 	echo "CROSS_COMPILE=xtensa-lx106-elf-" >> ~/.bashrc
 fi
 
 # Set up the SDK
+# TODO: can this be automated? is there a place to check what the latest SDK
+# is, and then install it the same way each time? probably not -- updates to
+# this repo will have to manually change this chunk of steps.
 cd /opt/Espressif
 LATEST_SDK_VERSION="esp_iot_sdk_v0.9.5"
-CURRENT_SDK_VERSION=`readlink esp8266_sdk || echo -n ""`;
+CURRENT_SDK_VERSION=`readlink esp8266_sdk || :`
 
 if [ "$LATEST_SDK_VERSION" != "$CURRENT_SDK_VERSION" ]; then
 	rm -rf esp8266_sdk
@@ -79,8 +81,8 @@ if [ "$LATEST_SDK_VERSION" != "$CURRENT_SDK_VERSION" ]; then
 	tar -xzf /vagrant/tools/sdk/extra-includes/include.tgz
 fi
 
-HAS_SDK_BASE=`cat ~/.bashrc | grep ESP8266_SDK_BASE || echo -n ""`
-if [ -z $HAS_SDK_BASE ]; then
+HAS_SDK_BASE=`cat ~/.bashrc | grep "ESP8266_SDK_BASE" || :`
+if [ -z "$HAS_SDK_BASE" ]; then
 	echo "# ESP8266 SDK Base" >> ~/.bashrc
 	echo "ESP8266_SDK_BASE=/opt/Espressif/esp8266_sdk" >> ~/.bashrc
 fi
@@ -97,12 +99,11 @@ cd /opt/Espressif/esp8266_rtos_sdk
 git pull
 make 
 
-HAS_RTOS_SDK_BASE=`cat ~/.bashrc | grep ESP8266_RTOS_SDK_BASE || echo -n ""`
-if [ -z $HAS_RTOS_SDK_BASE ]; then
+HAS_RTOS_SDK_BASE=`cat ~/.bashrc | grep "ESP8266_RTOS_SDK_BASE" || :`
+if [ -z "$HAS_RTOS_SDK_BASE" ]; then
 	echo "# ESP8266 RTOS SDK Base" >> ~/.bashrc
 	echo "ESP8266_RTOS_SDK_BASE=/opt/Espressif/esp8266_rtos_sdk" >> ~/.bashrc
 fi
-
 
 
 # Install ESP tool

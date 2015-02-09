@@ -21,7 +21,20 @@ fi
 
 cd /opt/Espressif/crosstool-NG
 
-function gitsha() { git show --format=%H | head -1; }
+# Git complains if these values are not set
+GIT_USERNAME=`git config --global user.name`
+if [ -z "$GIT_USERNAME" ]; then
+	git config --global user.name "Your Name"
+fi
+GIT_USEREMAIL=`git config --global user.email`
+if [ -z "$GIT_USEREMAIL" ]; then
+	git config --global user.email "you@example.com"
+fi
+
+
+function gitsha() { 
+	git show --format=%H | head -1; 
+}
 OLDSHA=`gitsha`
 git pull origin lx106
 

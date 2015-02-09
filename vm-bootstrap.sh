@@ -22,15 +22,14 @@ fi
 cd /opt/Espressif/crosstool-NG
 
 # Git complains if these values are not set
-GIT_USERNAME=`git config --global user.name`
+GIT_USERNAME=`git config --global user.name : `
 if [ -z "$GIT_USERNAME" ]; then
 	git config --global user.name "Your Name"
 fi
-GIT_USEREMAIL=`git config --global user.email`
+GIT_USEREMAIL=`git config --global user.email : `
 if [ -z "$GIT_USEREMAIL" ]; then
 	git config --global user.email "you@example.com"
 fi
-
 
 function gitsha() { 
 	git show --format=%H | head -1; 
@@ -110,6 +109,7 @@ if [ ! -d /opt/Espressif/esp8266_rtos_sdk ]; then
 	git clone https://github.com/espressif/esp_iot_rtos_sdk.git esp8266_rtos_sdk
 	git clone https://github.com/espressif/esp_iot_rtos_sdk_lib.git esp8266_rtos_sdk_lib
 	cp esp8266_rtos_sdk_lib/lib/* esp8266_rtos_sdk/lib
+	sed -i -e 's/xt-xcc/xt-cc/' /opt/Espressif/esp8266_rtos_sdk/Makefile
 fi
 
 cd /opt/Espressif/esp8266_rtos_sdk

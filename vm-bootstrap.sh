@@ -79,3 +79,12 @@ fi
 cd nodemcu-firmware
 git pull
 make
+
+# Compile the Micropython firmware
+if [ ! -d ~/dev/micropython ]; then
+	git clone https://github.com/micropython/micropython.git
+fi
+cd ~/dev/micropython/esp8266
+git pull
+make V=1
+

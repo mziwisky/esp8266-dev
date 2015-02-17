@@ -1,5 +1,6 @@
 /*
-Some random cgi routines.
+Some random cgi routines. Used in the LED example and the page that returns the entire
+flash as a binary. Also handles the hit counter on the main page.
 */
 
 /*
@@ -19,7 +20,9 @@ Some random cgi routines.
 #include "httpd.h"
 #include "cgi.h"
 #include "io.h"
+#include <ip_addr.h>
 #include "espmissingincludes.h"
+
 
 //cause I can't be bothered to write an ioGetLed()
 static char currLedState=0;
@@ -59,7 +62,7 @@ void ICACHE_FLASH_ATTR tplLed(HttpdConnData *connData, char *token, void **arg) 
 			os_strcpy(buff, "off");
 		}
 	}
-	espconn_sent(connData->conn, (uint8 *)buff, os_strlen(buff));
+	httpdSend(connData, buff, -1);
 }
 
 static long hitCounter=0;
@@ -73,7 +76,7 @@ void ICACHE_FLASH_ATTR tplCounter(HttpdConnData *connData, char *token, void **a
 		hitCounter++;
 		os_sprintf(buff, "%ld", hitCounter);
 	}
-	espconn_sent(connData->conn, (uint8 *)buff, os_strlen(buff));
+	httpdSend(connData, buff, -1);
 }
 
 
@@ -93,6 +96,7 @@ int ICACHE_FLASH_ATTR cgiReadFlash(HttpdConnData *connData) {
 		*pos=0x40200000;
 		return HTTPD_CGI_MORE;
 	}
+	//Send 1K of flash per call. We will get called again if we haven't sent 512K yet.
 	espconn_sent(connData->conn, (uint8 *)(*pos), 1024);
 	*pos+=1024;
 	if (*pos>=0x40200000+(512*1024)) return HTTPD_CGI_DONE; else return HTTPD_CGI_MORE;

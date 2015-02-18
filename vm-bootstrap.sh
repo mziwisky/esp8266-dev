@@ -16,7 +16,7 @@ sudo chown vagrant /opt/Espressif
 # Build the cross-compiler
 cd /opt/Espressif
 if [ ! -d /opt/Espressif/crosstool-NG ]; then
-  git clone -b lx106 git://github.com/jcmvbkbc/crosstool-NG.git
+  git clone -b lx106 https://github.com/jcmvbkbc/crosstool-NG.git
 fi
 
 cd /opt/Espressif/crosstool-NG

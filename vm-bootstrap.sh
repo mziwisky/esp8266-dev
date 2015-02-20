@@ -14,34 +14,30 @@ fi
 sudo chown vagrant /opt/Espressif
 
 # Build the cross-compiler
-cd /opt/Espressif
-if [ ! -d /opt/Espressif/crosstool-NG ]; then
-  git clone -b lx106 git://github.com/jcmvbkbc/crosstool-NG.git
+cd /opt/
+
+IS_EMPTY=`find Espressif/ -maxdepth 0 -empty -exec echo -n 1 \;`
+if [ "$IS_EMPTY" == "1" ]; then
+	git clone https://github.com/pfalcon/esp-open-sdk.git Espressif
 fi
+cd Espressif
+git pull
+git submodule update
+# TODO: if the build fails try to clean the code by uncommenting the line below
+# make clean
+make STANDALONE=y
 
-cd /opt/Espressif/crosstool-NG
-
-function gitsha() { git show --format=%H | head -1; }
-OLDSHA=`gitsha`
-git pull origin lx106
-
-if [ "$OLDSHA" != `gitsha` ] || [ ! -d /opt/Espressif/crosstool-NG/builds ]; then
-  ./bootstrap && ./configure -- prefix=`pwd` && make && make install
-  ./ct-ng xtensa-lx106-elf
-  ./ct-ng build
-fi
-
-PATH=$PWD/builds/xtensa-lx106-elf/bin:$PATH # for building the RTOS SDK later
+export PATH=$PWD/xtensa-lx106-elf/bin:$PATH
 
 # Setup the cross compiler
-HAS_PATH=`cat ~/.bashrc | grep "$PWD/builds/xtensa-lx106-elf/bin:" || :`
+HAS_PATH=`cat ~/.bashrc | grep "$PWD/xtensa-lx106-elf/bin:" || :`
 if [ -z "$HAS_PATH" ]; then
   echo "# Add Xtensa Compiler Path" >> ~/.bashrc
   echo "export PATH=$PWD/builds/xtensa-lx106-elf/bin:\$PATH" >> ~/.bashrc
   echo "export XTENSA_TOOLS_ROOT=$PWD/builds/xtensa-lx106-elf/bin" >> ~/.bashrc
 fi
 
-cd /opt/Espressif/crosstool-NG/builds/xtensa-lx106-elf/bin
+cd $PWD/xtensa-lx106-elf/bin
 chmod u+w .
 rm -f xt-*
 for i in `ls xtensa-lx106*`; do
@@ -49,7 +45,8 @@ for i in `ls xtensa-lx106*`; do
   echo "symlinking: $XT_NAME"
   ln -s "$i" "$XT_NAME"
 done
-ln -s xt-cc xt-xcc # the RTOS SDK needs it
+sudo ln -s xt-cc xt-xcc # the RTOS SDK needs it
+sudo chown vagrant -R /opt/Espressif/xtensa-lx106-elf/bin
 
 HAS_CROSS_COMPILE=`cat ~/.bashrc | grep "export CROSS_COMPILE" || :`
 if [ -z "$HAS_CROSS_COMPILE" ]; then
@@ -57,61 +54,38 @@ if [ -z "$HAS_CROSS_COMPILE" ]; then
   echo "export CROSS_COMPILE=xtensa-lx106-elf-" >> ~/.bashrc
 fi
 
-# Set up the SDK
-# TODO: can this be automated? is there a place to check what the latest SDK
-# is, and then install it the same way each time? probably not -- updates to
-# this repo will have to manually change this chunk of steps.
-cd /opt/Espressif
-LATEST_SDK_VERSION="esp_iot_sdk_v0.9.5"
-CURRENT_SDK_VERSION=`readlink esp8266_sdk || :`
-
-if [ "$LATEST_SDK_VERSION" != "$CURRENT_SDK_VERSION" ]; then
-  rm -rf esp8266_sdk
-  unzip -o /vagrant/tools/sdk/esp_iot_sdk_v0.9.5_15_01_23.zip
-  mv License esp_iot_sdk_v0.9.5/
-  mv release_note.txt esp_iot_sdk_v0.9.5/
-  cd esp_iot_sdk_v0.9.5/include
-  unzip -o /vagrant/tools/sdk/esp_iot_sdk_v0.9.5_15_01_23_patch1.zip  user_interface.h
-  cd ../lib
-  mv libmain.a libmain.a.old
-
-  unzip -o /vagrant/tools/sdk/esp_iot_sdk_v0.9.5_15_01_23_patch1.zip libmain_fix_0.9.5.a
-  mv libmain_fix_0.9.5.a libmain.a
-  cd ../../
-  ln -s esp_iot_sdk_v0.9.5 esp8266_sdk
-  cp /vagrant/tools/sdk/extra-libs/* esp8266_sdk/lib/
-  cd /opt/Espressif/esp8266_sdk
-  tar -xzf /vagrant/tools/sdk/extra-includes/include.tgz
-fi
-
 HAS_SDK_BASE=`cat ~/.bashrc | grep "export SDK_BASE" || :`
 if [ -z "$HAS_SDK_BASE" ]; then
   echo "# ESP8266 SDK Base" >> ~/.bashrc
-  echo "export SDK_BASE=/opt/Espressif/esp8266_sdk" >> ~/.bashrc
+  echo "export SDK_BASE=/opt/Espressif/sdk" >> ~/.bashrc
+  echo "export SDK_EXTRA_INCLUDES=/opt/Espressif/sdk/include" >> ~/.bashrc
 fi
-
-# Set up the RTOS SDK
-cd /opt/Espressif
-if [ ! -d /opt/Espressif/esp8266_rtos_sdk ]; then
-  git clone https://github.com/espressif/esp_iot_rtos_sdk.git esp8266_rtos_sdk
-  git clone https://github.com/espressif/esp_iot_rtos_sdk_lib.git esp8266_rtos_sdk_lib
-  cp esp8266_rtos_sdk_lib/lib/* esp8266_rtos_sdk/lib
-fi
-
-cd /opt/Espressif/esp8266_rtos_sdk
-git pull origin master
-make
-
 
 # Install ESP tool
 sudo dpkg -i /vagrant/tools/esptool/esptool_0.0.2-1_i386.deb
 
 # Install esptool-py
-cd /opt/Espressif
-if [ ! -d /opt/Espressif/esptool-py ]; then
-  git clone https://github.com/themadinventor/esptool esptool-py
+sudo ln -sf /opt/Espressif/esptool/esptool.py /usr/local/bin/
+
+
+# Compile the NodeMCU firmware
+if [ ! -d ~/dev ]; then
+	mkdir ~/dev
 fi
-cd /opt/Espressif/esptool-py
-git pull origin master
-sudo ln -sf $PWD/esptool.py /usr/local/bin/
+cd ~/dev
+if [ ! -d ~/dev/nodemcu-firmware ]; then
+	git clone https://github.com/nodemcu/nodemcu-firmware.git
+fi
+cd nodemcu-firmware
+git pull
+make
+
+cd ~/dev
+# Compile the Micropython firmware
+if [ ! -d ~/dev/micropython ]; then
+	git clone https://github.com/micropython/micropython.git
+fi
+cd ~/dev/micropython/esp8266
+git pull
+make V=1
 

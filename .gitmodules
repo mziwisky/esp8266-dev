@@ -1,0 +1,3 @@
+[submodule "esphttpd"]
+	path = esphttpd/
+	url = http://git.spritesserver.nl/esphttpd.git

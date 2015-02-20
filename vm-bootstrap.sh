@@ -80,6 +80,7 @@ cd nodemcu-firmware
 git pull
 make
 
+cd ~/dev
 # Compile the Micropython firmware
 if [ ! -d ~/dev/micropython ]; then
 	git clone https://github.com/micropython/micropython.git

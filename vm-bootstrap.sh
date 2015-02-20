@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -e
+set -ex
 
 # This is based on https://github.com/esp8266/esp8266-wiki/wiki/Toolchain
 
@@ -9,7 +9,7 @@ sudo apt-get -y install git autoconf build-essential \
      gperf bison flex texinfo libtool libncurses5-dev \
      wget gawk libc6-dev-amd64 python-serial libexpat-dev unzip
 if [ ! -d /opt/Espressif ]; then
-	sudo mkdir /opt/Espressif
+  sudo mkdir /opt/Espressif
 fi
 sudo chown vagrant /opt/Espressif
 
@@ -32,33 +32,33 @@ export PATH=$PWD/xtensa-lx106-elf/bin:$PATH
 # Setup the cross compiler
 HAS_PATH=`cat ~/.bashrc | grep "$PWD/xtensa-lx106-elf/bin:" || :`
 if [ -z "$HAS_PATH" ]; then
-	echo "# Add Xtensa Compiler Path" >> ~/.bashrc
-	echo "PATH=$PWD/xtensa-lx106-elf/bin:\$PATH" >> ~/.bashrc
-	echo "XTENSA_TOOLS_ROOT=$PWD/xtensa-lx106-elf/bin" >> ~/.bashrc 
+  echo "# Add Xtensa Compiler Path" >> ~/.bashrc
+  echo "export PATH=$PWD/builds/xtensa-lx106-elf/bin:\$PATH" >> ~/.bashrc
+  echo "export XTENSA_TOOLS_ROOT=$PWD/builds/xtensa-lx106-elf/bin" >> ~/.bashrc
 fi
 
 cd $PWD/xtensa-lx106-elf/bin
-sudo rm -f xt-*
+chmod u+w .
+rm -f xt-*
 for i in `ls xtensa-lx106*`; do
-	XT_NAME=`echo -n $i | sed s/xtensa-lx106-elf-/xt-/`
-	echo "symlinking: $XT_NAME"
-	sudo ln -s "$i" "$XT_NAME"
+  XT_NAME=`echo -n $i | sed s/xtensa-lx106-elf-/xt-/`
+  echo "symlinking: $XT_NAME"
+  ln -s "$i" "$XT_NAME"
 done
 sudo ln -s xt-cc xt-xcc # the RTOS SDK needs it
 sudo chown vagrant -R /opt/Espressif/xtensa-lx106-elf/bin
 
-HAS_CROSS_COMPILE=`cat ~/.bashrc | grep "CROSS_COMPILE" || :`
+HAS_CROSS_COMPILE=`cat ~/.bashrc | grep "export CROSS_COMPILE" || :`
 if [ -z "$HAS_CROSS_COMPILE" ]; then
-	echo "# Cross Compilation Settings" >> ~/.bashrc
-	echo "CROSS_COMPILE=xtensa-lx106-elf-" >> ~/.bashrc
+  echo "# Cross Compilation Settings" >> ~/.bashrc
+  echo "export CROSS_COMPILE=xtensa-lx106-elf-" >> ~/.bashrc
 fi
 
-HAS_SDK_BASE=`cat ~/.bashrc | grep "ESP8266_SDK_BASE" || :`
+HAS_SDK_BASE=`cat ~/.bashrc | grep "export SDK_BASE" || :`
 if [ -z "$HAS_SDK_BASE" ]; then
-	echo "# ESP8266 SDK Base" >> ~/.bashrc
-	echo "ESP8266_SDK_BASE=/opt/Espressif/sdk" >> ~/.bashrc
-        echo "SDK_BASE=/opt/Espressif/esp8266_sdk" >> ~/.bashrc
-	echo "SDK_EXTRA_INCLUDES=/opt/Espressif/esp8266_sdk/include" >> ~/.bashrc
+  echo "# ESP8266 SDK Base" >> ~/.bashrc
+  echo "export SDK_BASE=/opt/Espressif/esp8266_sdk" >> ~/.bashrc
+  echo "export SDK_EXTRA_INCLUDES=/opt/Espressif/esp8266_sdk/include" >> ~/.bashrc
 fi
 
 # Install ESP tool

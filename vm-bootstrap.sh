@@ -103,6 +103,12 @@ cd /opt/Espressif/esp8266_rtos_sdk
 git pull origin master
 make
 
+HAS_RTOS_SDK_BASE=`cat ~/.bashrc | grep "ESP8266_RTOS_SDK_BASE" || :`
+if [ -z "$HAS_RTOS_SDK_BASE" ]; then
+	echo "# ESP8266 RTOS SDK Base" >> ~/.bashrc
+	echo "export ESP8266_RTOS_SDK_BASE=/opt/Espressif/esp8266_rtos_sdk" >> ~/.bashrc
+fi
+
 
 # Install ESP tool
 sudo dpkg -i /vagrant/tools/esptool/esptool_0.0.2-1_i386.deb

@@ -7,7 +7,10 @@ set -ex
 sudo apt-get update
 sudo apt-get -y install git autoconf build-essential \
      gperf bison flex texinfo libtool libncurses5-dev \
-     wget gawk libc6-dev-amd64 python-serial libexpat-dev unzip
+     wget gawk libc6-dev-amd64 python-pip libexpat-dev unzip
+
+sudo pip install pyserial
+
 if [ ! -d /opt/Espressif ]; then
   sudo mkdir /opt/Espressif
 fi
@@ -16,7 +19,7 @@ sudo chown vagrant /opt/Espressif
 # Build the cross-compiler
 cd /opt/Espressif
 if [ ! -d /opt/Espressif/crosstool-NG ]; then
-  git clone -b lx106 git://github.com/jcmvbkbc/crosstool-NG.git
+  git clone -b lx106 https://github.com/jcmvbkbc/crosstool-NG.git
 fi
 
 cd /opt/Espressif/crosstool-NG

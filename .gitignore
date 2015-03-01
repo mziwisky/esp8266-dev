@@ -1,17 +1,1 @@
 .vagrant
-
-esphttpd/build/
-esphttpd/firmware/
-esphttpd/mkespfsimage/*.o
-esphttpd/mkespfsimage/mkespfsimage
-esphttpd/webpages.espfs
-esphttpd/espfstest/*.o
-esphttpd/espfstest/espfstest
-
-esphttpd/lib/heatshrink/heatshrink
-esphttpd/lib/heatshrink/test_heatshrink_dynamic
-esphttpd/lib/heatshrink/test_heatshrink_static
-esphttpd/lib/heatshrink/*.o
-esphttpd/lib/heatshrink/*.core
-esphttpd/lib/heatshrink/*.dSYM
-

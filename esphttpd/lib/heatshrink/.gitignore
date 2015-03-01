@@ -1,0 +1,6 @@
+heatshrink/heatshrink
+heatshrink/test_heatshrink_dynamic
+heatshrink/test_heatshrink_static
+heatshrink/*.o
+heatshrink/*.core
+heatshrink/*.dSYM

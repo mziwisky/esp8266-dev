@@ -107,7 +107,7 @@ make
 
 
 # Install ESP tool
-sudo dpkg -i /vagrant/tools/esptool/esptool_0.0.2-1_i386.deb
+sudo cp /vagrant/tools/esptool-0.0.3 /usr/local/bin/esptool
 
 # Install esptool-py
 cd /opt/Espressif

@@ -91,6 +91,7 @@ HAS_SDK_BASE=`cat ~/.bashrc | grep "export SDK_BASE" || :`
 if [ -z "$HAS_SDK_BASE" ]; then
   echo "# ESP8266 SDK Base" >> ~/.bashrc
   echo "export SDK_BASE=/opt/Espressif/esp8266_sdk" >> ~/.bashrc
+  echo "export SDK_EXTRA_INCLUDES=/opt/Espressif/esp8266_sdk/include" >> ~/.bashrc
 fi
 
 # Set up the RTOS SDK
@@ -104,6 +105,12 @@ fi
 cd /opt/Espressif/esp8266_rtos_sdk
 git pull origin master
 make
+
+HAS_RTOS_SDK_BASE=`cat ~/.bashrc | grep "ESP8266_RTOS_SDK_BASE" || :`
+if [ -z "$HAS_RTOS_SDK_BASE" ]; then
+	echo "# ESP8266 RTOS SDK Base" >> ~/.bashrc
+	echo "export ESP8266_RTOS_SDK_BASE=/opt/Espressif/esp8266_rtos_sdk" >> ~/.bashrc
+fi
 
 
 # Install ESP tool
